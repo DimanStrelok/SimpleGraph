@@ -1,9 +1,7 @@
 #include <iostream>
 #include <queue>
-#include <vector>
 #include <unordered_map>
-#include <algorithm>
-#include "Node.h"
+
 #include "Graph.h"
 
 void dijkstra_search(const Graph& graph, const std::string& start, std::unordered_map<Node::NodeName, Node::NodeName>& came_from,
@@ -16,10 +14,14 @@ void dijkstra_search(const Graph& graph, const std::string& start, std::unordere
     cost_so_far[start] = 0;
     while (!frontier.empty()) {
         auto current = frontier.top().first;
+        auto dist = frontier.top().second;
         frontier.pop();
+        if (dist > cost_so_far.at(current.name)) {
+            continue;
+        }
         for (auto&& next : current.edges) {
             Node::EdgeWeight new_cost = cost_so_far[current.name] + next.second;
-            if (!cost_so_far.count(next.first) || new_cost < cost_so_far[next.first]) {
+            if (cost_so_far.count(next.first) == 0 || new_cost < cost_so_far[next.first]) {
                 came_from[next.first] = current.name;
                 cost_so_far[next.first] = new_cost;
                 frontier.emplace(graph.findNode(next.first), new_cost);
@@ -37,8 +39,7 @@ std::vector<Node::NodeName> reconstruct_path(const Node::NodeName& from, const N
         current = came_from.at(current);
         path.push_back(current);
     }
-    std::reverse(path.begin(), path.end());
-    return path;
+    return {path.rbegin(), path.rend()};
 }
 
 int main() {

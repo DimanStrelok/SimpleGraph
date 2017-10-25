@@ -1,8 +1,8 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <tuple>
-#include <iostream>
 #include <unordered_map>
 
 struct Node {
@@ -40,11 +40,11 @@ struct Node {
 namespace std {
     template<>
     struct hash<Node> {
-        typedef Node argument_type;
-        typedef std::size_t result_type;
+        using argument_type = Node;
+        using result_type = std::size_t;
 
         result_type operator()(const argument_type& s) const noexcept {
             return std::hash<std::string>()(s.name);
         }
     };
-}
+}  // namespace std
