@@ -5,8 +5,15 @@ Node::Node(const NodeName& name_) : name(name_) {}
 std::ostream& operator<<(std::ostream& os, const Node& node) {
     os << "Name node: " << node.name << std::endl;
     os << "Edges " << node.edges.size() << std::endl;
+    size_t i = 0;
+    size_t max = node.edges.size() - 1;
     for (auto&& edge : node.edges) {
-        os << edge.first << ' ' << edge.second << std::endl;
+        if (i < max) {
+            os << edge.first << ' ' << edge.second << std::endl;
+        } else {
+            os << edge.first << ' ' << edge.second;
+        }
+        i++;
     }
     return os;
 }
@@ -51,4 +58,13 @@ bool Node::operator!=(const Node& rhs) const {
 
 void Node::addEdge(const NodeName& to, EdgeWeight weight) {
     edges.emplace(to, weight);
+}
+
+void Node::updateEdge(const NodeName& to, EdgeWeight weight) {
+    edges.erase(to);
+    edges.emplace(to, weight);
+}
+
+void Node::removeEdge(const Node::NodeName& to) {
+    edges.erase(to);
 }

@@ -35,6 +35,10 @@ struct Node {
     bool operator!=(const Node& rhs) const;
 
     void addEdge(const NodeName& to, EdgeWeight weight);
+
+    void updateEdge(const NodeName& to, EdgeWeight weight);
+
+    void removeEdge(const NodeName& to);
 };
 
 namespace std {

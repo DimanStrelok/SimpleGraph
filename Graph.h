@@ -14,11 +14,19 @@ public:
 
     friend std::istream& operator>>(std::istream& is, Graph& graph);
 
-    void addNode(const Node::NodeName& name);
-
     Node findNode(const Node::NodeName& name) const;
 
+    void addNode(const Node::NodeName& name);
+
+    void renameNode(const Node::NodeName& oldName, const Node::NodeName& newName);
+
+    void removeNode(const Node::NodeName& name);
+
     void addEdge(const Node::NodeName& from, const Node::NodeName& to, Node::EdgeWeight weight);
+
+    void updateEdge(const Node::NodeName& from, const Node::NodeName& to, Node::EdgeWeight weight);
+
+    void removeEdge(const Node::NodeName& from, const Node::NodeName& to);
 
     size_t countNodes() const;
 

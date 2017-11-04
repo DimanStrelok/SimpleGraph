@@ -8,8 +8,7 @@ void dijkstra_search(const Graph& graph, const std::string& start, std::unordere
                      std::unordered_map<Node::NodeName, Node::EdgeWeight>& cost_so_far) {
     using Edge = std::pair<Node, Node::EdgeWeight>;
     std::priority_queue<Edge, std::vector<Edge>, std::greater<>> frontier;
-    Node s = graph.findNode(start);
-    frontier.emplace(s, 0);
+    frontier.emplace(graph.findNode(start), 0);
     came_from[start] = start;
     cost_so_far[start] = 0;
     while (!frontier.empty()) {
@@ -42,6 +41,17 @@ std::vector<Node::NodeName> reconstruct_path(const Node::NodeName& from, const N
     return {path.rbegin(), path.rend()};
 }
 
+void printPath(const std::vector<Node::NodeName>& path) {
+    for (auto&& s : path) {
+        std::cout << s;
+        if (s != path.back()) {
+            std::cout << " -> ";
+        } else {
+            std::cout << std::endl;
+        }
+    }
+}
+
 int main() {
     Graph graph;
     graph.addNode("A");
@@ -62,16 +72,25 @@ int main() {
     std::unordered_map<Node::NodeName, Node::NodeName> come_from;
     std::unordered_map<Node::NodeName, Node::EdgeWeight> cost_so_far;
     dijkstra_search(graph, "A", come_from, cost_so_far);
+    std::cout << "Distance from A to B " << cost_so_far["B"] << std::endl;
+    std::cout << "Distance from A to C " << cost_so_far["C"] << std::endl;
+    std::cout << "Distance from A to D " << cost_so_far["D"] << std::endl;
     std::cout << "Distance from A to E " << cost_so_far["E"] << std::endl;
-    auto path = reconstruct_path("A", "E", come_from);
+    std::cout << "Distance from A to F " << cost_so_far["F"] << std::endl;
+    auto path = reconstruct_path("A", "B", come_from);
+    std::cout << "Path from A to B" << std::endl;
+    printPath(path);
+    path = reconstruct_path("A", "C", come_from);
+    std::cout << "Path from A to C" << std::endl;
+    printPath(path);
+    path = reconstruct_path("A", "D", come_from);
+    std::cout << "Path from A to D" << std::endl;
+    printPath(path);
+    path = reconstruct_path("A", "E", come_from);
     std::cout << "Path from A to E" << std::endl;
-    for (auto&& s : path) {
-        std::cout << s;
-        if (s != path.back()) {
-            std::cout << " -> ";
-        } else {
-            std::cout << std::endl;
-        }
-    }
+    printPath(path);
+    path = reconstruct_path("A", "F", come_from);
+    std::cout << "Path from A to F" << std::endl;
+    printPath(path);
     return 0;
 }
