@@ -1,3 +1,3 @@
 # Simple Graph
 Dijkstra search algorithm
-C++ 14
+- C++ 14

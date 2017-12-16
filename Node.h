@@ -1,22 +1,17 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <tuple>
-#include <unordered_map>
 
 struct Node {
-
-    using NodeName = std::string;
-
-    using EdgeWeight = int;
-
-    NodeName name;
-    std::unordered_map<NodeName, EdgeWeight> edges;
+    std::string name;
+    std::map<std::string, double> edges;
 
     Node() = default;
 
-    Node(const NodeName& name_);
+    Node(const std::string& name_);
 
     friend std::ostream& operator<<(std::ostream& os, const Node& node);
 
@@ -34,21 +29,9 @@ struct Node {
 
     bool operator!=(const Node& rhs) const;
 
-    void addEdge(const NodeName& to, EdgeWeight weight);
+    void addEdge(const std::string& to, double weight);
 
-    void updateEdge(const NodeName& to, EdgeWeight weight);
+    void updateEdge(const std::string& to, double weight);
 
-    void removeEdge(const NodeName& to);
+    void removeEdge(const std::string& to);
 };
-
-namespace std {
-    template<>
-    struct hash<Node> {
-        using argument_type = Node;
-        using result_type = std::size_t;
-
-        result_type operator()(const argument_type& s) const noexcept {
-            return std::hash<std::string>()(s.name);
-        }
-    };
-}  // namespace std

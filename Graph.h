@@ -1,12 +1,12 @@
 #pragma once
 
 #include <iostream>
-#include <unordered_set>
+#include <set>
 
 #include "Node.h"
 
 class Graph {
-    std::unordered_set<Node> nodes;
+    std::set<Node> nodes;
 public:
     Graph() = default;
 
@@ -14,21 +14,21 @@ public:
 
     friend std::istream& operator>>(std::istream& is, Graph& graph);
 
-    Node findNode(const Node::NodeName& name) const;
+    Node findNode(const std::string& name) const;
 
-    void addNode(const Node::NodeName& name);
+    void addNode(const std::string& name);
 
-    void renameNode(const Node::NodeName& oldName, const Node::NodeName& newName);
+    void renameNode(const std::string& oldName, const std::string& newName);
 
-    void removeNode(const Node::NodeName& name);
+    void removeNode(const std::string& name);
 
-    void addEdge(const Node::NodeName& from, const Node::NodeName& to, Node::EdgeWeight weight);
+    void addEdge(const std::string& from, const std::string& to, double weight);
 
-    void updateEdge(const Node::NodeName& from, const Node::NodeName& to, Node::EdgeWeight weight);
+    void updateEdge(const std::string& from, const std::string& to, double weight);
 
-    void removeEdge(const Node::NodeName& from, const Node::NodeName& to);
+    void removeEdge(const std::string& from, const std::string& to);
 
     size_t countNodes() const;
 
-    std::unordered_set<Node> getNodes() const;
+    std::set<Node> getNodes() const;
 };

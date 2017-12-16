@@ -1,25 +1,26 @@
 #include <iostream>
 #include <queue>
-#include <unordered_map>
+#include <map>
+#include <random>
 
 #include "Graph.h"
 
-void dijkstra_search(const Graph& graph, const std::string& start, std::unordered_map<Node::NodeName, Node::NodeName>& came_from,
-                     std::unordered_map<Node::NodeName, Node::EdgeWeight>& cost_so_far) {
-    using Edge = std::pair<Node, Node::EdgeWeight>;
-    std::priority_queue<Edge, std::vector<Edge>, std::greater<>> frontier;
+void dijkstra_search(const Graph& graph, const std::string& start,
+                     std::map<std::string, std::string>& came_from, std::map<std::string, double>& cost_so_far) {
+    std::priority_queue<std::pair<Node, double>, std::vector<std::pair<Node, double>>, std::greater<>> frontier;
     frontier.emplace(graph.findNode(start), 0);
     came_from[start] = start;
     cost_so_far[start] = 0;
+    Node current;
+    double dist;
     while (!frontier.empty()) {
-        auto current = frontier.top().first;
-        auto dist = frontier.top().second;
+        std::tie(current, dist) = frontier.top();
         frontier.pop();
-        if (dist > cost_so_far.at(current.name)) {
+        if (dist > cost_so_far[current.name]) {
             continue;
         }
         for (auto&& next : current.edges) {
-            Node::EdgeWeight new_cost = cost_so_far[current.name] + next.second;
+            double new_cost = cost_so_far[current.name] + next.second;
             if (cost_so_far.count(next.first) == 0 || new_cost < cost_so_far[next.first]) {
                 came_from[next.first] = current.name;
                 cost_so_far[next.first] = new_cost;
@@ -29,11 +30,10 @@ void dijkstra_search(const Graph& graph, const std::string& start, std::unordere
     }
 }
 
-std::vector<Node::NodeName> reconstruct_path(const Node::NodeName& from, const Node::NodeName& to,
-                                             const std::unordered_map<Node::NodeName, Node::NodeName>& came_from) {
-    std::vector<Node::NodeName> path;
-    Node::NodeName current = to;
-    path.push_back(current);
+std::vector<std::string> reconstruct_path(const std::string& from, const std::string& to,
+                                          const std::map<std::string, std::string>& came_from) {
+    std::vector<std::string> path = {to};
+    std::string current = to;
     while (current != from) {
         current = came_from.at(current);
         path.push_back(current);
@@ -41,7 +41,7 @@ std::vector<Node::NodeName> reconstruct_path(const Node::NodeName& from, const N
     return {path.rbegin(), path.rend()};
 }
 
-void printPath(const std::vector<Node::NodeName>& path) {
+void printPath(const std::vector<std::string>& path) {
     for (auto&& s : path) {
         std::cout << s;
         if (s != path.back()) {
@@ -52,45 +52,36 @@ void printPath(const std::vector<Node::NodeName>& path) {
     }
 }
 
+void printAllCosts(const std::string& from, const Graph& graph, const std::map<std::string, double>& cost_so_far) {
+    for (auto&& e : graph.getNodes()) {
+        std::cout << "Distance from " << from << " to " << e.name << " = " << cost_so_far.at(e.name) << std::endl;
+    }
+}
+
+void printAllPaths(const std::string& from, const Graph& graph, const std::map<std::string, std::string>& come_from) {
+    for (auto&& e : graph.getNodes()) {
+        auto path = reconstruct_path(from, e.name, come_from);
+        std::cout << "Path from " << from << " to " << e.name << std::endl;
+        printPath(path);
+    }
+}
+
 int main() {
     Graph graph;
+    std::random_device rd;
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<> dis(1, 999);
     graph.addNode("A");
     graph.addNode("B");
     graph.addNode("C");
-    graph.addNode("D");
-    graph.addNode("E");
-    graph.addNode("F");
-    graph.addEdge("A", "B", 7);
-    graph.addEdge("A", "C", 9);
-    graph.addEdge("A", "F", 14);
-    graph.addEdge("B", "C", 10);
-    graph.addEdge("B", "D", 15);
-    graph.addEdge("C", "D", 11);
-    graph.addEdge("C", "F", 2);
-    graph.addEdge("D", "E", 6);
-    graph.addEdge("E", "F", 9);
-    std::unordered_map<Node::NodeName, Node::NodeName> come_from;
-    std::unordered_map<Node::NodeName, Node::EdgeWeight> cost_so_far;
+    graph.addEdge("A", "B", dis(gen));
+    graph.addEdge("A", "C", dis(gen));
+    graph.addEdge("B", "C", dis(gen));
+    std::map<std::string, std::string> come_from;
+    std::map<std::string, double> cost_so_far;
     dijkstra_search(graph, "A", come_from, cost_so_far);
-    std::cout << "Distance from A to B " << cost_so_far["B"] << std::endl;
-    std::cout << "Distance from A to C " << cost_so_far["C"] << std::endl;
-    std::cout << "Distance from A to D " << cost_so_far["D"] << std::endl;
-    std::cout << "Distance from A to E " << cost_so_far["E"] << std::endl;
-    std::cout << "Distance from A to F " << cost_so_far["F"] << std::endl;
-    auto path = reconstruct_path("A", "B", come_from);
-    std::cout << "Path from A to B" << std::endl;
-    printPath(path);
-    path = reconstruct_path("A", "C", come_from);
-    std::cout << "Path from A to C" << std::endl;
-    printPath(path);
-    path = reconstruct_path("A", "D", come_from);
-    std::cout << "Path from A to D" << std::endl;
-    printPath(path);
-    path = reconstruct_path("A", "E", come_from);
-    std::cout << "Path from A to E" << std::endl;
-    printPath(path);
-    path = reconstruct_path("A", "F", come_from);
-    std::cout << "Path from A to F" << std::endl;
-    printPath(path);
+    printAllCosts("A", graph, cost_so_far);
+    printAllPaths("A", graph, come_from);
+    std::cout << graph << std::endl;
     return 0;
 }
